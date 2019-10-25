@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    </head>
+    <style>
+        body{
+            background:#940837;
+        }
+        table{
+            border-collapse: collapse;
+            width:50%;
+            height:50%;
+        }
+
+        td{
+            height:100px;
+            width:100px;
+            border:1px solid #5b0909;
+            background:#5b0909;
+            padding:12px;
+        }
+
+        .circle-div{
+            border-radius: 50%;
+            height:100%;
+            width:100%;
+            background:whitesmoke;
+        }
+
+
+        #box{
+            height:100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+    
+    </style>
+    <body>
+        <div id="box">
+            <table id="main-table">
+
+            </table>
+        </div>
+        <script>
+        matrix = [
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0]
+            ]
+        turn = 0
+        row = 0
+        
+        for(let i=0;i<6;i++){
+            tr = $("<tr></tr>")
+            col = 0
+            for(let i=0;i<7;i++){
+                tr.append($("<td><div class='circle-div'></div></td>").attr("id",row+"-"+col).click(function(){
+                    var getCol = parseInt($(this).attr("id").split("-")[1])
+                    for(var i=0;i<6;i++){
+                        
+                        if(matrix[i][getCol]){
+                            break;
+                        }
+                    }
+                    
+                    matrix[i-1][getCol] = turn%2+1
+                    if(turn%2==0){
+                        $($("#"+(i-1)+"-"+getCol).find("div")).css({"background":"#E26241"})
+                    }
+                    else{
+                        $($("#"+(i-1)+"-"+getCol).find("div")).css({"background":"#FFD369"})
+                    }
+                    iterateMatrix()
+                    turn++
+                }))
+                col++
+            }
+            row++
+            $("#main-table").append(tr)
+        }    
+        
+        function iterateMatrix(){
+            var search = turn%2+1
+            for(let i=0;i<6;i++){
+                for(let j=0;j<7;j++){
+                    if(matrix[i][j]==search){
+                        checkGameEnd([i,j],search)
+                    }
+                }
+            }
+        }
+
+        function endGame(){
+            alert("Player "+(turn%2+1)+" has won")
+        }
+
+        function checkGameEnd(coords,search){
+            x = parseInt(coords[0])
+            y = parseInt(coords[1])
+            if(x+3 < 6 && y+3 <7 && matrix[x+1][y+1]==search && matrix[x+2][y+2]==search && matrix[x+3][y+3]==search){
+                console.log(1,x,y)
+                endGame();return
+            }
+            else if(y+3 < 7 && x-3>-1 && matrix[x-1][y+1]==search && matrix[x-2][y+2]==search && matrix[x-3][y+3]==search){
+                console.log(3,x,y)
+                endGame();return
+            }
+            else if(x-3 >-1 && matrix[x-1][y]==search && matrix[x-2][y]==search && matrix[x-3][y]==search){
+                console.log(5,x,y)
+                endGame();return
+            }
+            else if(y-3 >-1 && matrix[x][y-1]==search && matrix[x][y-2]==search && matrix[x][y-3]==search){
+                console.log(7,x,y)
+                endGame();return
+            }
+            return
+        }
+
+        </script>
+    </body>
+</html>
