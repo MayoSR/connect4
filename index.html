@@ -14,47 +14,95 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     </head>
     <style>
-        body{
-            background:#940837;
+
+        
+
+        body,html{
+            background:#b3b3b3;
+            text-align: center;
+            overflow: hidden;
         }
         table{
             border-collapse: collapse;
-            width:50%;
-            height:50%;
+            position: relative;
+            box-shadow: -3px -1px 0px #0a6d76,
+                -4px -2px 0px #0a6d76,
+                -5px -3px 0px #0a6d76,
+                -6px -4px 0px #0a6d76,
+                -7px -5px 0px #0a6d76,
+                -8px -6px 0px #0a6d76,
+                -9px -7px 0px #0a6d76,
+                -10px -8px 0px #0a6d76,
+                -11px -9px 0px #0a6d76,
+                -12px -10px 0px #0a6d76,
+                -10px 20px 20px 10px rgba(0,0,0,0.6);
         }
+        
 
         td{
             height:100px;
             width:100px;
-            border:1px solid #5b0909;
-            background:#5b0909;
+            border:1px solid #0e9aa7;
+            background:#0e9aa7;
             padding:12px;
+            position: relative;
         }
 
         .circle-div{
             border-radius: 50%;
             height:100%;
             width:100%;
-            background:whitesmoke;
+            cursor: pointer;
+            box-shadow: inset 10px 10px 40px -19px rgba(0,0,0);
         }
 
+        .lower-circle{
+            position: absolute;
+            top:12px;
+            border-radius: 50%;
+            height:75px;
+            cursor: pointer;
+            width:75px;
+            background:transparent;
+            box-shadow: inset 10px 10px 60px -19px rgba(0,0,0);
+        }
 
-        #box{
-            height:100vh;
+        #table-container{
+            position: absolute;
+            height:100%;
+            width: 100%;
             display: flex;
             justify-content: center;
-            align-items: center;
-
+            margin-top:200px;
         }
-    
+
+        .header{
+            font-size:120px;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            width:100%;
+            
+        }
+
+        .header h1{
+            font-size:100px;
+            letter-spacing: 8px;
+        }
+        
     </style>
     <body>
-        <div id="box">
+        <div class="header">
+            <h1>Connect Four</h1>
+        </div>
+        <div id="table-container">
             <table id="main-table">
 
             </table>
         </div>
+
         <script>
+
         matrix = [
             [0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0],
@@ -70,7 +118,7 @@
             tr = $("<tr></tr>")
             col = 0
             for(let i=0;i<7;i++){
-                tr.append($("<td><div class='circle-div'></div></td>").attr("id",row+"-"+col).click(function(){
+                tr.append($("<td><div class='lower-circle'></div><div class='circle-div'></div></td>").attr("id",row+"-"+col).click(function(){
                     var getCol = parseInt($(this).attr("id").split("-")[1])
                     for(var i=0;i<6;i++){
                         
@@ -81,10 +129,10 @@
                     
                     matrix[i-1][getCol] = turn%2+1
                     if(turn%2==0){
-                        $($("#"+(i-1)+"-"+getCol).find("div")).css({"background":"#E26241"})
+                        $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#fe8a71","position":"relative","top":"-600px"}).animate({"top":"0px"})
                     }
                     else{
-                        $($("#"+(i-1)+"-"+getCol).find("div")).css({"background":"#FFD369"})
+                        $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#f6cd61","position":"relative","top":"-600px"}).animate({"top":"0px"})
                     }
                     iterateMatrix()
                     turn++
@@ -93,7 +141,18 @@
             }
             row++
             $("#main-table").append(tr)
-        }    
+        }
+
+        $(document).ready(()=>{
+            var mq = window.matchMedia( "(max-width: 600px)" );
+            if (mq.matches) {
+                
+                $("#main-table").attr("height","344px")
+                console.log("here")
+            }
+        })
+        
+
         
         function iterateMatrix(){
             var search = turn%2+1
@@ -107,26 +166,38 @@
         }
 
         function endGame(){
-            alert("Player "+(turn%2+1)+" has won")
+            $("#table-container").animate({"transform":"rotateZ(180deg)"})
         }
 
         function checkGameEnd(coords,search){
             x = parseInt(coords[0])
             y = parseInt(coords[1])
             if(x+3 < 6 && y+3 <7 && matrix[x+1][y+1]==search && matrix[x+2][y+2]==search && matrix[x+3][y+3]==search){
-                console.log(1,x,y)
+                $($("#"+(x)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x+1)+"-"+(y+1)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x+2)+"-"+(y+2)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x+3)+"-"+(y+3)).find(".circle-div")).css({"background":"whitesmoke"})
                 endGame();return
             }
             else if(y+3 < 7 && x-3>-1 && matrix[x-1][y+1]==search && matrix[x-2][y+2]==search && matrix[x-3][y+3]==search){
-                console.log(3,x,y)
+                $($("#"+(x)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x-1)+"-"+(y+1)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x-2)+"-"+(y+2)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x-3)+"-"+(y+3)).find(".circle-div")).css({"background":"whitesmoke"})
                 endGame();return
             }
             else if(x-3 >-1 && matrix[x-1][y]==search && matrix[x-2][y]==search && matrix[x-3][y]==search){
-                console.log(5,x,y)
+                $($("#"+(x)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x-1)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x-2)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x-3)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
                 endGame();return
             }
             else if(y-3 >-1 && matrix[x][y-1]==search && matrix[x][y-2]==search && matrix[x][y-3]==search){
-                console.log(7,x,y)
+                $($("#"+(x)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x)+"-"+(y-1)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x)+"-"+(y-2)).find(".circle-div")).css({"background":"whitesmoke"})
+                $($("#"+(x)+"-"+(y-3)).find(".circle-div")).css({"background":"whitesmoke"})
                 endGame();return
             }
             return
