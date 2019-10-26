@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    </head>
+    <style>
+
+        
+
+body,html{
+            background:#b3b3b3;
+            text-align: center;
+            overflow: hidden;
+        }
+        table{
+            border-collapse: collapse;
+            position: relative;
+            box-shadow: -1px -1px 0px #0a6d76,
+                -2px -2px 0px #0a6d76,
+                -3px -3px 0px #0a6d76,
+                -4px -4px 0px #0a6d76,
+                -5px -5px 0px #0a6d76,
+                -6px -6px 0px #0a6d76,
+                -7px -7px 0px #0a6d76,
+                -8px -8px 0px #0a6d76,
+                -9px -9px 0px #0a6d76,
+                -10px -10px 0px #0a6d76,
+                -11px -11px 0px #0a6d76,
+                -12px -12px 0px #0a6d76,
+                -13px -13px 0px #0a6d76,
+                -14px -14px 0px #0a6d76,
+                -15px -15px 0px #0a6d76,
+                -16px -16px 0px #0a6d76,
+                -17px -17px 0px #0a6d76,
+                -18px -18px 0px #0a6d76,
+                -19px -19px 0px #0a6d76,
+                -20px -20px 0px #0a6d76,
+                -10px 20px 20px 10px rgba(0,0,0,0.6);
+        }
+        
+
+        td{
+            height:100px;
+            width:100px;
+            border:1px solid #0e9aa7;
+            background:#0e9aa7;
+            padding:12px;
+            position: relative;
+        }
+
+        .circle-div{
+            border-radius: 50%;
+            height:100%;
+            width:100%;
+            cursor: pointer;
+            box-shadow: inset 10px 10px 40px -19px rgba(0,0,0);
+        }
+
+        .lower-circle{
+            position: absolute;
+            top:12px;
+            border-radius: 50%;
+            height:75px;
+            cursor: pointer;
+            width:75px;
+            background:transparent;
+            box-shadow: inset 10px 10px 60px -19px rgba(0,0,0);
+        }
+
+        #table-container{
+            position: absolute;
+            height:100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top:200px;
+        }
+
+        .header{
+            font-size:120px;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            width:100%;
+            
+        }
+
+        .header h1{
+            font-size:100px;
+            letter-spacing: 8px;
+        }
+        
+        .cover-page{
+            position: absolute;
+            top:0px;
+            left:0px;
+            right:0px;
+            bottom:0px;
+            height:100%;
+            width:100%;
+            background:rgba(0,0,0,0.8);
+            display:flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        #loader-cover{
+            background:#0e9aa7;
+            z-index:3;
+            flex-direction: column;
+        }
+
+        .loader{
+            height:80px;
+            width:80px;
+            background:whitesmoke;
+            border-radius:50%;
+            margin-right:20px;
+            box-shadow: inset 10px 10px 60px -19px rgba(0,0,0);
+            background:#fe8a71;
+        }
+
+        .loader-row{
+            display: flex;
+        }
+
+        #winner-text{
+            color:white;
+        }
+
+        #winner-banner{
+            display: none;
+        }
+        
+    </style>
+    <body>
+
+        <div class="cover-page" id="loader-cover">
+            <div class="loader-row">
+                <div id="loader-1" class="loader"></div>
+                <div id="loader-2" class="loader"></div>
+                <div id="loader-3" class="loader"></div>
+                <div id="loader-4" class="loader"></div>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>Connect Four</h1>
+        </div>
+        <div id="table-container">
+            <table id="main-table">
+
+            </table>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+        var socket = io.connect('http://localhost');
+
+        matrix = [
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0]
+            ]
+        turn = 0
+        row = 0
+        
+        for(let i=0;i<6;i++){
+            tr = $("<tr></tr>")
+            col = 0
+            for(let i=0;i<7;i++){
+                tr.append($("<td><div class='lower-circle'></div><div class='circle-div'></div></td>").attr("id",row+"-"+col).click(function(){
+                    $("body").css({"pointer-events":"none"})
+                    var getCol = parseInt($(this).attr("id").split("-")[1])
+                    for(var i=0;i<6;i++){    
+                        if(matrix[i][getCol]){
+                            break;
+                        }
+                    }
+                    
+                    matrix[i-1][getCol] = turn%2+1
+                    if(turn%2==0){
+                        $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#fe8a71","position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
+                            socket.on('move', function (data) {
+                                socket.emit('mode made', { move: i-1+"-"+getCol });
+                            });
+                            iterateMatrix()
+                        })
+                    }
+                    else{
+                        $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#f6cd61","position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
+                            iterateMatrix()
+                        })
+                    }
+                    
+                }))
+                col++
+            }
+            row++
+            $("#main-table").append(tr)
+        }
+
+        
+        function iterateMatrix(search){
+            var search = turn%2+1
+            turn++
+            for(let i=0;i<6;i++){
+                for(let j=0;j<7;j++){
+                    if(matrix[i][j]==search){
+                        checkGameEnd([i,j],search)
+                    }
+                }
+            }
+            $("body").css({"pointer-events":"auto"})
+        }
+
+        function endGame(){
+            $("#table-container").animate({"transform":"rotateZ(180deg)"})
+        }
+
+        function checkGameEnd(coords,search){
+            x = parseInt(coords[0])
+            y = parseInt(coords[1])
+            if(x+3 < 6 && y+3 <7 && matrix[x+1][y+1]==search && matrix[x+2][y+2]==search && matrix[x+3][y+3]==search){
+                $($("#"+(x)+"-"+(y)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x+1)+"-"+(y+1)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x+2)+"-"+(y+2)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x+3)+"-"+(y+3)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                endGame();return
+            }
+            else if(y+3 < 7 && x-3>-1 && matrix[x-1][y+1]==search && matrix[x-2][y+2]==search && matrix[x-3][y+3]==search){
+                $($("#"+(x)+"-"+(y)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x-1)+"-"+(y+1)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x-2)+"-"+(y+2)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x-3)+"-"+(y+3)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                endGame();return
+            }
+            else if(x-3 >-1 && matrix[x-1][y]==search && matrix[x-2][y]==search && matrix[x-3][y]==search){
+                $($("#"+(x)+"-"+(y)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x-1)+"-"+(y)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x-2)+"-"+(y)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x-3)+"-"+(y)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                endGame();return
+            }
+            else if(y-3 >-1 && matrix[x][y-1]==search && matrix[x][y-2]==search && matrix[x][y-3]==search){
+                $($("#"+(x)+"-"+(y)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x)+"-"+(y-1)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x)+"-"+(y-2)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                $($("#"+(x)+"-"+(y-3)).find(".circle-div")).effect("highlight",{"color":"white"},5000)
+                endGame();return
+            }
+            
+        }
+
+        function loaderRipple(){
+
+            $("#loader-1").animate({"margin-top":"-20px"},200)
+            $("#loader-1").animate({"margin-top":"0px"},200)
+            $("#loader-2").animate({"margin-top":"-20px"},300)
+            $("#loader-2").animate({"margin-top":"0px"},300)
+            $("#loader-3").animate({"margin-top":"-20px"},400)
+            $("#loader-3").animate({"margin-top":"0px"},400)
+            $("#loader-4").animate({"margin-top":"-20px"},500)
+            $("#loader-4").animate({"margin-top":"0px"},500,function(){
+                $("#loader-cover").fadeOut()
+            })
+
+        }
+            loaderRipple()
+
+        </script>
+    </body>
+</html>

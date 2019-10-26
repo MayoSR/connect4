@@ -9,280 +9,80 @@
         <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     </head>
     <style>
-
         
-
-        body,html{
+        html,body{
+            margin:0px;
+            padding:0px;
             background:#b3b3b3;
-            text-align: center;
-            overflow: hidden;
         }
-        table{
-            border-collapse: collapse;
-            position: relative;
-            box-shadow: -1px -1px 0px #0a6d76,
-                -2px -2px 0px #0a6d76,
-                -3px -3px 0px #0a6d76,
-                -4px -4px 0px #0a6d76,
-                -5px -5px 0px #0a6d76,
-                -6px -6px 0px #0a6d76,
-                -7px -7px 0px #0a6d76,
-                -8px -8px 0px #0a6d76,
-                -9px -9px 0px #0a6d76,
-                -10px -10px 0px #0a6d76,
-                -11px -11px 0px #0a6d76,
-                -12px -12px 0px #0a6d76,
-                -13px -13px 0px #0a6d76,
-                -14px -14px 0px #0a6d76,
-                -15px -15px 0px #0a6d76,
-                -16px -16px 0px #0a6d76,
-                -17px -17px 0px #0a6d76,
-                -18px -18px 0px #0a6d76,
-                -19px -19px 0px #0a6d76,
-                -20px -20px 0px #0a6d76,
-                -10px 20px 20px 10px rgba(0,0,0,0.6);
-        }
-        
 
-        td{
-            height:100px;
-            width:100px;
-            border:1px solid #0e9aa7;
-            background:#0e9aa7;
+        .nav-btn{
+            color:white;
+            background: #0e9aa7;
             padding:12px;
-            position: relative;
-        }
-
-        .circle-div{
-            border-radius: 50%;
-            height:100%;
-            width:100%;
+            border:none;
+            font-size:18px;
+            font-weight: bold;
+            border-radius:5px;
+            width:250px;
+            margin:20px;
             cursor: pointer;
-            box-shadow: inset 10px 10px 40px -19px rgba(0,0,0);
         }
 
-        .lower-circle{
-            position: absolute;
-            top:12px;
-            border-radius: 50%;
-            height:75px;
-            cursor: pointer;
-            width:75px;
-            background:transparent;
-            box-shadow: inset 10px 10px 60px -19px rgba(0,0,0);
-        }
-
-        #table-container{
-            position: absolute;
-            height:100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            margin-top:200px;
-        }
-
-        .header{
-            font-size:120px;
+        .container{
             position: absolute;
             display: flex;
             justify-content: center;
+            align-items: center;
+            top:0px;
+            left:0px;
+            right:0px;
+            bottom:0px;
+            height:100%;
             width:100%;
-            
         }
 
-        .header h1{
-            font-size:100px;
-            letter-spacing: 8px;
+        .main-menu{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: space-evenly;
+            padding:40px;
+            background:#296c70;
+            border-radius: 20px;;
         }
-        
+
+        #name-ip{
+            padding:0px;
+            height:45px;
+            padding-left:10px;
+            width:240px;
+        }
+
+        #name-ip::placeholder{
+            color:whitesmoke;
+            text-align: center;
+        }
     </style>
     <body>
-        <div class="header">
-            <h1>Connect Four</h1>
+        <div class="container">
+            <div class="main-menu">
+                <input placeholder="Enter your name" id="name-ip" class="nav-btn">
+                <input type="button" value="Single Player" onclick="mode('singleplayer')" class="nav-btn">
+                <input type="button" value="Multi Player" onclick="mode('multiplayer')" class="nav-btn">
+            </div>
         </div>
         
-        <div id="table-container">
-            <table id="main-table">
-
-            </table>
-        </div>
-        <script src="/socket.io/socket.io.js"></script>
         <script>
-        var socket = io.connect('http://localhost');
 
-        matrix = [
-            [0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0]
-            ]
-            
-
-        selfcolor = null
-        matrixnum = null
-        oppcolor = null
-        row = 0
-        data = 0
-
-        if (performance.navigation.type == 1) {
-            if(localStorage.getItem("matrix")!=null){
-                matrix = JSON.parse(localStorage.getItem("matrix"));
-                selfcolor = localStorage.getItem("selfcolor")
-                matrixnum = localStorage.getItem("matrixnum")
-                oppcolor = localStorage.getItem("oppcolor")
-            }
-        }
-        
-        $("#table-container").css({"pointer-events":"none"})
-
-        socket.on("send move",(data)=>{
-            
-            if(data["move"]=="begin"){
-                $("#table-container").css({"pointer-events":"auto"})
-                selfcolor = data["selfcolor"]
-                matrixnum = data["matrixnum"]
-                console.log("You start")
-            }
-            else if(data["move"]==true){
-                var coords = data["data"].split("-")
-                matrix[coords[0]][coords[1]] = data["matrixnum"]
-                localStorage.setItem("matrix", JSON.stringify(matrix));
-                localStorage.setItem("selfcolor", selfcolor);
-                localStorage.setItem("matrixnum", matrixnum);
-                localStorage.setItem("oppcolor", data["color"]);
-                $("#table-container").css({"pointer-events":"auto"})
-                $($("#"+data["data"]).find(".circle-div")).css({"background":data["color"],"position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
-                    iterateMatrix()
-                })
-            }
-            else if(data["move"]=="set"){
-                selfcolor = data["selfcolor"]
-                matrixnum = data["matrixnum"]
-            }
-
-        })
-
-        
-        
-        for(let i=0;i<6;i++){
-            tr = $("<tr></tr>")
-            col = 0
-            for(let i=0;i<7;i++){
-                tr.append($("<td><div class='lower-circle'></div><div class='circle-div'></div></td>").attr("id",row+"-"+col).click(function(){
-                    var getCol = parseInt($(this).attr("id").split("-")[1])
-                    for(var i=0;i<6;i++){    
-                        if(matrix[i][getCol]){
-                            break;
-                        }
-                    }
-                    matrix[i-1][getCol] = matrixnum
-                    localStorage.setItem("matrix", JSON.stringify(matrix));
-                    localStorage.setItem("selfcolor", selfcolor);
-                    localStorage.setItem("matrixnum", matrixnum);
-                    localStorage.setItem("oppcolor", data["color"]);
-                    $($("#"+(i-1)+"-"+(getCol)).find(".circle-div")).css({"background":selfcolor,"position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
-                        iterateMatrix()
-                    })
-                    $("#table-container").css({"pointer-events":"none"})
-                    socket.emit("get moves",[(i-1)+"-"+getCol,matrixnum,selfcolor])
-
-                }))
-                col++
-            }
-            row++
-            $("#main-table").append(tr)
-            setMatrix(matrix,selfcolor,matrixnum,oppcolor)
-        }
-
-        function setMatrix(matrix,selfcolor,matrixnum,oppcolor){
-            console.log(matrix,selfcolor,matrixnum,oppcolor)
-            for(let i=0;i<6;i++){
-                for(let j=0;j<7;j++){
-                    if(matrix[i][j]==parseInt(matrixnum)){
-                        $($("#"+(i)+"-"+(j)).find(".circle-div")).css({"background":selfcolor,"position":"relative","top":"0px"})
-                        iterateMatrix()
-                    }
-                    else if(parseInt(matrix[i][j])){
-                        $($("#"+(i)+"-"+(j)).find(".circle-div")).css({"background":oppcolor,"position":"relative","top":"0px"})
-                        iterateMatrix()
-                    }
-                }
-            }
-        }
-
-        function resetLocalStorage(){
-            localStorage.removeItem("matrix");
-            localStorage.removeItem("selfcolor");
-            localStorage.removeItem("matrixnum");
-            localStorage.removeItem("oppcolor");
-        }
-        
-        function iterateMatrix(){
-            for(let i=0;i<6;i++){
-                for(let j=0;j<7;j++){
-                    if(matrix[i][j]){
-                        checkGameEnd([i,j],1)
-                        checkGameEnd([i,j],2)
-                    }
-                }
-            }
-        }
-
-        function endGame(winner){
-            socket.emit("complete game",winner)
-            socket.on("game over message",(data)=>{
-                console.log(data)
-            })
-            localStorage.removeItem("matrix");
-            localStorage.removeItem("selfcolor");
-            localStorage.removeItem("matrixnum");
-            localStorage.setItem("oppcolor");
-        }
-
-        function checkGameEnd(coords,search){
-            x = parseInt(coords[0])
-            y = parseInt(coords[1])
-            if(x+3 < 6 && y+3 <7 && matrix[x+1][y+1]==search && matrix[x+2][y+2]==search && matrix[x+3][y+3]==search){
-                $($("#"+(x)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x+1)+"-"+(y+1)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x+2)+"-"+(y+2)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x+3)+"-"+(y+3)).find(".circle-div")).css({"background":"whitesmoke"})
-                endGame(search);
-                return
-            }
-            else if(y+3 < 7 && x-3>-1 && matrix[x-1][y+1]==search && matrix[x-2][y+2]==search && matrix[x-3][y+3]==search){
-                $($("#"+(x)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x-1)+"-"+(y+1)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x-2)+"-"+(y+2)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x-3)+"-"+(y+3)).find(".circle-div")).css({"background":"whitesmoke"})
-                endGame(search);
-                return
-            }
-            else if(x-3 >-1 && matrix[x-1][y]==search && matrix[x-2][y]==search && matrix[x-3][y]==search){
-                $($("#"+(x)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x-1)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x-2)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x-3)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
-                endGame(search);
-                return
-            }
-            else if(y-3 >-1 && matrix[x][y-1]==search && matrix[x][y-2]==search && matrix[x][y-3]==search){
-                $($("#"+(x)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x)+"-"+(y-1)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x)+"-"+(y-2)).find(".circle-div")).css({"background":"whitesmoke"})
-                $($("#"+(x)+"-"+(y-3)).find(".circle-div")).css({"background":"whitesmoke"})
-                endGame(search);
-                return
+            function mode(path){
+                window.location.href= "http://localhost/"+path
             }
             
-        }
 
         </script>
     </body>

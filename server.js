@@ -8,6 +8,14 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/singleplayer', function (req, res) {
+  res.sendFile(__dirname + '/singleplayer.html');
+});
+
+app.get('/multiplayer', function (req, res) {
+  res.sendFile(__dirname + '/multiplayer.html');
+});
+
 turn = 0
 colors = ["#fe8a71","#f6cd61"]
 matrixnum = 
