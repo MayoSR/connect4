@@ -25,26 +25,16 @@
         table{
             border-collapse: collapse;
             position: relative;
-            box-shadow: -1px -1px 0px #0a6d76,
-                -2px -2px 0px #0a6d76,
-                -3px -3px 0px #0a6d76,
-                -4px -4px 0px #0a6d76,
-                -5px -5px 0px #0a6d76,
-                -6px -6px 0px #0a6d76,
-                -7px -7px 0px #0a6d76,
-                -8px -8px 0px #0a6d76,
-                -9px -9px 0px #0a6d76,
-                -10px -10px 0px #0a6d76,
-                -11px -11px 0px #0a6d76,
-                -12px -12px 0px #0a6d76,
-                -13px -13px 0px #0a6d76,
-                -14px -14px 0px #0a6d76,
-                -15px -15px 0px #0a6d76,
-                -16px -16px 0px #0a6d76,
-                -17px -17px 0px #0a6d76,
-                -18px -18px 0px #0a6d76,
-                -19px -19px 0px #0a6d76,
-                -20px -20px 0px #0a6d76,
+            box-shadow: -3px -1px 0px #0a6d76,
+                -4px -2px 0px #0a6d76,
+                -5px -3px 0px #0a6d76,
+                -6px -4px 0px #0a6d76,
+                -7px -5px 0px #0a6d76,
+                -8px -6px 0px #0a6d76,
+                -9px -7px 0px #0a6d76,
+                -10px -8px 0px #0a6d76,
+                -11px -9px 0px #0a6d76,
+                -12px -10px 0px #0a6d76,
                 -10px 20px 20px 10px rgba(0,0,0,0.6);
         }
         
@@ -105,7 +95,6 @@
         <div class="header">
             <h1>Connect Four</h1>
         </div>
-        
         <div id="table-container">
             <table id="main-table">
 
@@ -123,127 +112,60 @@
             [0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0]
             ]
-            
-
-        selfcolor = null
-        matrixnum = null
-        oppcolor = null
+        turn = 0
         row = 0
-        data = 0
-
-        if (performance.navigation.type == 1) {
-            if(localStorage.getItem("matrix")!=null){
-                matrix = JSON.parse(localStorage.getItem("matrix"));
-                selfcolor = localStorage.getItem("selfcolor")
-                matrixnum = localStorage.getItem("matrixnum")
-                oppcolor = localStorage.getItem("oppcolor")
-            }
-        }
-        
-        $("#table-container").css({"pointer-events":"none"})
-
-        socket.on("send move",(data)=>{
-            
-            if(data["move"]=="begin"){
-                $("#table-container").css({"pointer-events":"auto"})
-                selfcolor = data["selfcolor"]
-                matrixnum = data["matrixnum"]
-                console.log("You start")
-            }
-            else if(data["move"]==true){
-                var coords = data["data"].split("-")
-                matrix[coords[0]][coords[1]] = data["matrixnum"]
-                localStorage.setItem("matrix", JSON.stringify(matrix));
-                localStorage.setItem("selfcolor", selfcolor);
-                localStorage.setItem("matrixnum", matrixnum);
-                localStorage.setItem("oppcolor", data["color"]);
-                $("#table-container").css({"pointer-events":"auto"})
-                $($("#"+data["data"]).find(".circle-div")).css({"background":data["color"],"position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
-                    iterateMatrix()
-                })
-            }
-            else if(data["move"]=="set"){
-                selfcolor = data["selfcolor"]
-                matrixnum = data["matrixnum"]
-            }
-
-        })
-
-        
         
         for(let i=0;i<6;i++){
             tr = $("<tr></tr>")
             col = 0
             for(let i=0;i<7;i++){
                 tr.append($("<td><div class='lower-circle'></div><div class='circle-div'></div></td>").attr("id",row+"-"+col).click(function(){
+                    $("body").css({"pointer-events":"none"})
                     var getCol = parseInt($(this).attr("id").split("-")[1])
                     for(var i=0;i<6;i++){    
                         if(matrix[i][getCol]){
                             break;
                         }
                     }
-                    matrix[i-1][getCol] = matrixnum
-                    localStorage.setItem("matrix", JSON.stringify(matrix));
-                    localStorage.setItem("selfcolor", selfcolor);
-                    localStorage.setItem("matrixnum", matrixnum);
-                    localStorage.setItem("oppcolor", data["color"]);
-                    $($("#"+(i-1)+"-"+(getCol)).find(".circle-div")).css({"background":selfcolor,"position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
-                        iterateMatrix()
-                    })
-                    $("#table-container").css({"pointer-events":"none"})
-                    socket.emit("get moves",[(i-1)+"-"+getCol,matrixnum,selfcolor])
-
+                    
+                    matrix[i-1][getCol] = turn%2+1
+                    if(turn%2==0){
+                        $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#fe8a71","position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
+                            socket.on('move', function (data) {
+                                socket.emit('mode made', { move: i-1+"-"+getCol });
+                            });
+                            iterateMatrix()
+                        })
+                    }
+                    else{
+                        $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#f6cd61","position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
+                            iterateMatrix()
+                        })
+                    }
+                    
                 }))
                 col++
             }
             row++
             $("#main-table").append(tr)
-            setMatrix(matrix,selfcolor,matrixnum,oppcolor)
         }
 
-        function setMatrix(matrix,selfcolor,matrixnum,oppcolor){
-            console.log(matrix,selfcolor,matrixnum,oppcolor)
-            for(let i=0;i<6;i++){
-                for(let j=0;j<7;j++){
-                    if(matrix[i][j]==parseInt(matrixnum)){
-                        $($("#"+(i)+"-"+(j)).find(".circle-div")).css({"background":selfcolor,"position":"relative","top":"0px"})
-                        iterateMatrix()
-                    }
-                    else if(parseInt(matrix[i][j])){
-                        $($("#"+(i)+"-"+(j)).find(".circle-div")).css({"background":oppcolor,"position":"relative","top":"0px"})
-                        iterateMatrix()
-                    }
-                }
-            }
-        }
-
-        function resetLocalStorage(){
-            localStorage.removeItem("matrix");
-            localStorage.removeItem("selfcolor");
-            localStorage.removeItem("matrixnum");
-            localStorage.removeItem("oppcolor");
-        }
         
-        function iterateMatrix(){
+        function iterateMatrix(search){
+            var search = turn%2+1
+            turn++
             for(let i=0;i<6;i++){
                 for(let j=0;j<7;j++){
-                    if(matrix[i][j]){
-                        checkGameEnd([i,j],1)
-                        checkGameEnd([i,j],2)
+                    if(matrix[i][j]==search){
+                        checkGameEnd([i,j],search)
                     }
                 }
             }
+            $("body").css({"pointer-events":"auto"})
         }
 
-        function endGame(winner){
-            socket.emit("complete game",winner)
-            socket.on("game over message",(data)=>{
-                console.log(data)
-            })
-            localStorage.removeItem("matrix");
-            localStorage.removeItem("selfcolor");
-            localStorage.removeItem("matrixnum");
-            localStorage.setItem("oppcolor");
+        function endGame(){
+            $("#table-container").animate({"transform":"rotateZ(180deg)"})
         }
 
         function checkGameEnd(coords,search){
@@ -254,32 +176,28 @@
                 $($("#"+(x+1)+"-"+(y+1)).find(".circle-div")).css({"background":"whitesmoke"})
                 $($("#"+(x+2)+"-"+(y+2)).find(".circle-div")).css({"background":"whitesmoke"})
                 $($("#"+(x+3)+"-"+(y+3)).find(".circle-div")).css({"background":"whitesmoke"})
-                endGame(search);
-                return
+                endGame();return
             }
             else if(y+3 < 7 && x-3>-1 && matrix[x-1][y+1]==search && matrix[x-2][y+2]==search && matrix[x-3][y+3]==search){
                 $($("#"+(x)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
                 $($("#"+(x-1)+"-"+(y+1)).find(".circle-div")).css({"background":"whitesmoke"})
                 $($("#"+(x-2)+"-"+(y+2)).find(".circle-div")).css({"background":"whitesmoke"})
                 $($("#"+(x-3)+"-"+(y+3)).find(".circle-div")).css({"background":"whitesmoke"})
-                endGame(search);
-                return
+                endGame();return
             }
             else if(x-3 >-1 && matrix[x-1][y]==search && matrix[x-2][y]==search && matrix[x-3][y]==search){
                 $($("#"+(x)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
                 $($("#"+(x-1)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
                 $($("#"+(x-2)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
                 $($("#"+(x-3)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
-                endGame(search);
-                return
+                endGame();return
             }
             else if(y-3 >-1 && matrix[x][y-1]==search && matrix[x][y-2]==search && matrix[x][y-3]==search){
                 $($("#"+(x)+"-"+(y)).find(".circle-div")).css({"background":"whitesmoke"})
                 $($("#"+(x)+"-"+(y-1)).find(".circle-div")).css({"background":"whitesmoke"})
                 $($("#"+(x)+"-"+(y-2)).find(".circle-div")).css({"background":"whitesmoke"})
                 $($("#"+(x)+"-"+(y-3)).find(".circle-div")).css({"background":"whitesmoke"})
-                endGame(search);
-                return
+                endGame();return
             }
             
         }
