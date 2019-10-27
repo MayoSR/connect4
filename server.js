@@ -5,7 +5,7 @@ var os = require('os');
 var ifaces = os.networkInterfaces();
 var connectedTo = null
 connections = []
-server.listen(3000,'0.0.0.0');
+server.listen(17141,'0.0.0.0');
 app.all('/*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");

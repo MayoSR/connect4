@@ -140,7 +140,7 @@
 
                 $.ajax({
                     method:"post",
-                    url:"http://localhost:3000/getip",
+                    url:"http://localhost:17141/getip",
                     success:function(data){
                         $("#your-ip").fadeIn()
                         $("#your-ip").text(data)
@@ -152,11 +152,11 @@
             function connCheck(){
                 $.ajax({
                     method:"post",
-                    url:"http://localhost:3000/connectedip",
+                    url:"http://localhost:17141/connectedip",
                     success:function(data){
                         if(data!=null){
                             clearInterval(connchk)
-                            location.href = "http://localhost:3000/multiplayer"
+                            location.href = "http://localhost:17141/multiplayer"
                         }
                     }
                 })
@@ -169,12 +169,12 @@
 
             function serverConnect(){
                 $.ajax({
-                    url:"http://localhost:3000/guest",
+                    url:"http://localhost:17141/guest",
                     data:{"connectedTo":$("#enter-ip").val()},
                     method:"post",
                     success:function(data){
-                        window.location.href="http://"+$("#enter-ip").val()+":3000/multiplayer"
-                        console.log("http://"+data+":3000/multiplayer")
+                        window.location.href="http://"+$("#enter-ip").val()+":17141/multiplayer"
+                        console.log("http://"+data+":17141/multiplayer")
                     }
                 })
             }

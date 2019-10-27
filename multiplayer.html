@@ -178,14 +178,14 @@
         const myFirstPromise = new Promise((resolve, reject) => {
 
             $.ajax({
-                url:"http://localhost:3000/connectedip",
+                url:"http://localhost:17141/connectedip",
                 method:"post",
                 success:function(data){
                     if(data==null){
-                        socket = io.connect("http://localhost",{ port: 3000 });
+                        socket = io.connect("http://localhost",{ port: 17141 });
                     }
                     else{
-                        socket = io.connect("http://"+data,{ port: 3000 });
+                        socket = io.connect("http://"+data,{ port: 17141 });
                     }
                     resolve("socketset")
                 }
