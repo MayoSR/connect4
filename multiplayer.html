@@ -172,9 +172,24 @@
         </div>
         <script src="/socket.io/socket.io.js"></script>
         <script>
+        
+        var socket = null
 
-
-        var socket = io.connect('http://localhost');
+        function setSocket(data){
+            if(data==null){
+                socket = io.connect("http://localhost",{ port: 3000 });
+            }
+            else{
+                socket = io.connect("http://"+data,{ port: 3000 });
+            }
+        }
+        $.ajax({
+            url:"http://localhost:3000/connectedip",
+            method:"post",
+            success:function(data){
+                setSocket(data)
+            }
+        })
 
         matrix = [
             [0,0,0,0,0,0,0],

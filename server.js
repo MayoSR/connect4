@@ -1,8 +1,11 @@
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+var os = require('os');
+var ifaces = os.networkInterfaces();
+var connectedTo = null
 connections = []
-server.listen(80);
+server.listen(3000,'0.0.0.0');
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html');
@@ -12,8 +15,39 @@ app.get('/singleplayer', function (req, res) {
   res.sendFile(__dirname + '/singleplayer.html');
 });
 
-app.get('/multiplayer', function (req, res) {
+app.post('/multiplayer', function (req, res) {
   res.sendFile(__dirname + '/multiplayer.html');
+});
+
+app.post("/connectedip",function(req,res){
+  res.send(connectedTo)
+})
+
+app.post('/guest', function (req, res) {
+  connectedTo = req.query["connectedTo"]
+  res.sendFile(__dirname + '/multiplayer.html');
+});
+
+app.post('/getip', function (req, res) {
+  'use strict';
+
+  Object.keys(ifaces).forEach(function (ifname) {
+    var alias = 0;
+
+    ifaces[ifname].forEach(function (iface) {
+      if ('IPv4' !== iface.family || iface.internal !== false) {
+        return;
+      }
+
+      if (alias >= 1) {
+        console.log(ifname + ':' + alias, iface.address);
+      } else {
+        res.send(iface.address);
+      }
+      ++alias;
+    });
+  });
+
 });
 
 turn = 0

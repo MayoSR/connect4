@@ -22,10 +22,10 @@
 
         .nav-btn{
             color:white;
+            font-size:18px;
             background: #0e9aa7;
             padding:12px;
             border:none;
-            font-size:18px;
             font-weight: bold;
             border-radius:5px;
             width:250px;
@@ -56,33 +56,128 @@
             border-radius: 20px;;
         }
 
-        #name-ip{
+        .nav-ip{
             padding:0px;
             height:45px;
             padding-left:10px;
             width:240px;
         }
 
-        #name-ip::placeholder{
+        .nav-ip::placeholder{
             color:whitesmoke;
+        }
+
+        #multiplayer-menu{
+            display: none;
+        }
+
+        #waiting-p,#your-ip{
+            display: none;
+            color:white;
+            font-size:18px;
+            padding-left:45px;
+        }
+
+        #your-ip{
+            padding:0px;
             text-align: center;
+        }
+
+        #enter-ip{
+            display: none;
         }
     </style>
     <body>
         <div class="container">
-            <div class="main-menu">
-                <input placeholder="Enter your name" id="name-ip" class="nav-btn">
-                <input type="button" value="Single Player" onclick="mode('singleplayer')" class="nav-btn">
-                <input type="button" value="Multi Player" onclick="mode('multiplayer')" class="nav-btn">
+            <div class="main-menu" id="main-menu">
+                <input placeholder="Enter your name" id="name-ip" class="nav-btn nav-ip">
+                <input type="button" value="Single Player" onclick="singlePlayer()" class="nav-btn">
+                <input type="button" value="Multi Player" onclick="multiplayer()" class="nav-btn">
+            </div>
+            <div class="main-menu" id="multiplayer-menu">
+                <p id="your-ip"></p>
+                <input type="button" value="Host Server" onclick="hostServer()" class="nav-btn">
+                <p id="waiting-p">Waiting for player to join .</p>
+                <input type="button" value="Join Server" onclick="joinServer()" class="nav-btn">
+                <input placeholder="Enter server IP"  id="enter-ip"  class="nav-btn nav-ip">
+                <input type="button" id="confirm-ip" onclick="serverConnect()" value="Confirm IP" class="nav-btn">
+                <input type="button" value="Go Back" onclick="back()" class="nav-btn">
             </div>
         </div>
         
         <script>
 
-            function mode(path){
-                window.location.href= "http://localhost/"+path
+            function singlePlayer(){
+                window.location.href= "http://localhost/singleplayer"
+            }
+
+            function multiplayer(){
+                $("#main-menu").fadeOut("slow",function(){
+                    $("#main-menu").hide()
+                    $("#multiplayer-menu").css("display", "flex").hide().fadeIn("slow")
+                })
+            }
+
+            function back(){
+                $("#main-menu").fadeIn("slow")
+                $("#multiplayer-menu").fadeOut("slow")
             }
             
+            function hostServer(){
+                $("#waiting-p").fadeIn()
+                
+                interv = setInterval(function(){
+                    if($("#waiting-p").text()=="Waiting for player to join ."){
+                        $("#waiting-p").text("Waiting for player to join . .")
+                    }
+                    else if($("#waiting-p").text()=="Waiting for player to join . ."){
+                        $("#waiting-p").text("Waiting for player to join . . .")
+                    }
+                    else if($("#waiting-p").text()=="Waiting for player to join . . ."){
+                        $("#waiting-p").text("Waiting for player to join .")
+                    }
+                },500)
+
+                $.ajax({
+                    method:"post",
+                    url:"http://localhost:3000/getip",
+                    success:function(data){
+                        $("#your-ip").fadeIn()
+                        $("#your-ip").text(data)
+                        connchk = setInterval(connCheck,1000)
+                    }
+                })
+            }
+
+            function connCheck(){
+                $.ajax({
+                    method:"post",
+                    url:"http://localhost:3000/connectedip",
+                    success:function(data){
+                        if(data!=null){
+                            clearInterval(connchk)
+                            location.href = "http://localhost:3000/multiplayer"
+                        }
+                    }
+                })
+            }
+
+            function joinServer(){
+                $("#enter-ip").fadeIn()
+                $("#confirm-ip").fadeIn()
+            }
+
+            function serverConnect(){
+                $.ajax({
+                    url:"http://localhost:3000/guest",
+                    data:{"connectedTo":$("#enter-ip").val()},
+                    method:"post",
+                    success:function(data){
+                        
+                    }
+                })
+            }
+
 
         </script>
     </body>
