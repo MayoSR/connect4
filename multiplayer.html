@@ -174,24 +174,25 @@
         <script>
         
         var socket = null
+        
+        const myFirstPromise = new Promise((resolve, reject) => {
 
-        function setSocket(data){
-            if(data==null){
-                socket = io.connect("http://localhost",{ port: 3000 });
-            }
-            else{
-                socket = io.connect("http://"+data,{ port: 3000 });
-            }
-        }
-        $.ajax({
-            url:"http://localhost:3000/connectedip",
-            method:"post",
-            success:function(data){
-                setSocket(data)
-            }
-        })
-
-        matrix = [
+            $.ajax({
+                url:"http://localhost:3000/connectedip",
+                method:"post",
+                success:function(data){
+                    if(data==null){
+                        socket = io.connect("http://localhost",{ port: 3000 });
+                    }
+                    else{
+                        socket = io.connect("http://"+data,{ port: 3000 });
+                    }
+                    resolve("socketset")
+                }
+            })
+        });
+        myFirstPromise.then((successMessage) => {
+            matrix = [
             [0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0],
@@ -201,74 +202,75 @@
             ]
             
 
-        selfcolor = null
-        matrixnum = null
-        oppcolor = null
-        lastmove = null
-        row = 0
-        data = 0
+            selfcolor = null
+            matrixnum = null
+            oppcolor = null
+            lastmove = null
+            row = 0
+            data = 0
 
-        /*if (performance.navigation.type == 1) {
-            if(localStorage.getItem("matrix")!=null){
-                loadData()
-            }
-        }*/
-        
-        $("#table-container").css({"pointer-events":"none"})
-
-        socket.on("send move",(data)=>{
+            /*if (performance.navigation.type == 1) {
+                if(localStorage.getItem("matrix")!=null){
+                    loadData()
+                }
+            }*/
             
-            if(data["move"]=="begin"){
-                $("#table-container").css({"pointer-events":"auto"})
-                selfcolor = data["selfcolor"]
-                matrixnum = data["matrixnum"]
+            $("#table-container").css({"pointer-events":"none"})
+
+            socket.on("send move",(data)=>{
                 
-            }
-            else if(data["move"]==true){
-                var coords = data["data"].split("-")
-                matrix[coords[0]][coords[1]] = data["matrixnum"]
-                saveData()
-                lastmove = data["data"]
-                $("#table-container").css({"pointer-events":"auto"})
-                $($("#"+data["data"]).find(".circle-div")).css({"background":data["color"],"position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
-                    iterateMatrix()
-                })
-            }
-            else if(data["move"]=="set"){
-                selfcolor = data["selfcolor"]
-                matrixnum = data["matrixnum"]
-            }
-
-        })
-
-        
-        
-        for(let i=0;i<6;i++){
-            tr = $("<tr></tr>")
-            col = 0
-            for(let i=0;i<7;i++){
-                tr.append($("<td><div class='lower-circle'></div><div class='circle-div'></div></td>").attr("id",row+"-"+col).click(function(){
-                    var getCol = parseInt($(this).attr("id").split("-")[1])
-                    for(var i=0;i<6;i++){    
-                        if(matrix[i][getCol]){
-                            break;
-                        }
-                    }
-                    matrix[i-1][getCol] = matrixnum
+                if(data["move"]=="begin"){
+                    $("#table-container").css({"pointer-events":"auto"})
+                    selfcolor = data["selfcolor"]
+                    matrixnum = data["matrixnum"]
+                    
+                }
+                else if(data["move"]==true){
+                    var coords = data["data"].split("-")
+                    matrix[coords[0]][coords[1]] = data["matrixnum"]
                     saveData()
-                    $($("#"+(i-1)+"-"+(getCol)).find(".circle-div")).css({"background":selfcolor,"position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
+                    lastmove = data["data"]
+                    $("#table-container").css({"pointer-events":"auto"})
+                    $($("#"+data["data"]).find(".circle-div")).css({"background":data["color"],"position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
                         iterateMatrix()
                     })
-                    $("#table-container").css({"pointer-events":"none"})
-                    socket.emit("get moves",[(i-1)+"-"+getCol,matrixnum,selfcolor])
+                }
+                else if(data["move"]=="set"){
+                    selfcolor = data["selfcolor"]
+                    matrixnum = data["matrixnum"]
+                }
 
-                }))
-                col++
+            })
+
+            
+            
+            for(let i=0;i<6;i++){
+                tr = $("<tr></tr>")
+                col = 0
+                for(let i=0;i<7;i++){
+                    tr.append($("<td><div class='lower-circle'></div><div class='circle-div'></div></td>").attr("id",row+"-"+col).click(function(){
+                        var getCol = parseInt($(this).attr("id").split("-")[1])
+                        for(var i=0;i<6;i++){    
+                            if(matrix[i][getCol]){
+                                break;
+                            }
+                        }
+                        matrix[i-1][getCol] = matrixnum
+                        saveData()
+                        $($("#"+(i-1)+"-"+(getCol)).find(".circle-div")).css({"background":selfcolor,"position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
+                            iterateMatrix()
+                        })
+                        $("#table-container").css({"pointer-events":"none"})
+                        socket.emit("get moves",[(i-1)+"-"+getCol,matrixnum,selfcolor])
+
+                    }))
+                    col++
+                }
+                row++
+                $("#main-table").append(tr)
+                setMatrix(matrix,selfcolor,matrixnum,oppcolor)
             }
-            row++
-            $("#main-table").append(tr)
-            setMatrix(matrix,selfcolor,matrixnum,oppcolor)
-        }
+        });
 
         function saveData(){
             localStorage.setItem("matrix", JSON.stringify(matrix));

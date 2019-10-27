@@ -6,6 +6,11 @@ var ifaces = os.networkInterfaces();
 var connectedTo = null
 connections = []
 server.listen(3000,'0.0.0.0');
+app.all('/*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html');
@@ -15,7 +20,7 @@ app.get('/singleplayer', function (req, res) {
   res.sendFile(__dirname + '/singleplayer.html');
 });
 
-app.post('/multiplayer', function (req, res) {
+app.get('/multiplayer', function (req, res) {
   res.sendFile(__dirname + '/multiplayer.html');
 });
 
@@ -25,7 +30,7 @@ app.post("/connectedip",function(req,res){
 
 app.post('/guest', function (req, res) {
   connectedTo = req.query["connectedTo"]
-  res.sendFile(__dirname + '/multiplayer.html');
+  res.send().status(200)
 });
 
 app.post('/getip', function (req, res) {
@@ -42,6 +47,7 @@ app.post('/getip', function (req, res) {
       if (alias >= 1) {
         console.log(ifname + ':' + alias, iface.address);
       } else {
+        console.log(iface.address)
         res.send(iface.address);
       }
       ++alias;
