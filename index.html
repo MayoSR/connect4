@@ -38,6 +38,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
             top:0px;
             left:0px;
             right:0px;
@@ -47,6 +48,8 @@
         }
 
         .main-menu{
+            position: relative;
+            z-index: 5;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -83,12 +86,117 @@
             text-align: center;
         }
 
-        #enter-ip{
+        #enter-ip,#confirm-ip{
             display: none;
         }
+
+        .falling-container{
+            position: absolute;
+            top:0px;
+            left:0px;
+            right:0px;
+            bottom:0px;
+            width:100%;
+            height:100%;
+            z-index:3;
+            display: flex;
+            flex-direction: row;
+            overflow-y: hidden;
+        }
+
+        .channel-lanes{
+            flex:0.1;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .coin{
+            width:80px;
+            height:80px;
+            border:1px solid rgba(0,0,0,0.1);
+            border-radius:50%;
+            background:rgba(81,81,81,0.1);
+            display: none;
+            position: absolute;
+            top:0px;
+        }
+
+
+        @keyframes twirlCoin{
+            from{
+                transform: rotateY(0deg);
+            }
+            to{
+                transform: rotateY(360deg);
+            }
+        }
+        
+        .header{
+            position: absolute;
+            top:100px;
+            font-size: 36px;
+            color:rgba(0,0,0,0.5);
+        }
+
     </style>
     <body>
         <div class="container">
+            <div class="header">
+                <h1>Connect 4</h1>
+            </div>
+            <div class="falling-container">
+                <div class="channel-lanes" id="channel-lane-1">
+                    <div class="coin" id="coin-1">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-2">
+                    <div class="coin" id="coin-2">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-3">
+                    <div class="coin" id="coin-3">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-4">
+                    <div class="coin" id="coin-4">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-5">
+                    <div class="coin" id="coin-5">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-6">
+                    <div class="coin" id="coin-6">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-7">
+                    <div class="coin" id="coin-7">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-8">
+                    <div class="coin" id="coin-8">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-9">
+                    <div class="coin" id="coin-9">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-10">
+                    <div class="coin" id="coin-10">
+
+                    </div>
+                </div>
+            </div>
             <div class="main-menu" id="main-menu">
                 <input placeholder="Enter your name" id="name-ip" class="nav-btn nav-ip">
                 <input type="button" value="Single Player" onclick="singlePlayer()" class="nav-btn">
@@ -108,7 +216,7 @@
         <script>
 
             function singlePlayer(){
-                window.location.href= "http://localhost/singleplayer"
+                window.location.href= "http://localhost:17141/singleplayer"
             }
 
             function multiplayer(){
@@ -119,8 +227,10 @@
             }
 
             function back(){
-                $("#main-menu").fadeIn("slow")
-                $("#multiplayer-menu").fadeOut("slow")
+                
+                $("#multiplayer-menu").fadeOut("slow",()=>{
+                    $("#main-menu").fadeIn("slow")
+                })
             }
             
             function hostServer(){
@@ -153,8 +263,9 @@
                 $.ajax({
                     method:"post",
                     url:"http://localhost:17141/connectedip",
+                    data:{"name":$("#name-ip").val()},
                     success:function(data){
-                        if(data!=null){
+                        if(data!=""){
                             clearInterval(connchk)
                             location.href = "http://localhost:17141/multiplayer"
                         }
@@ -169,15 +280,26 @@
 
             function serverConnect(){
                 $.ajax({
-                    url:"http://localhost:17141/guest",
-                    data:{"connectedTo":$("#enter-ip").val()},
-                    method:"post",
+                    url:"http://"+$("#enter-ip").val()+":17141/guest",
+                    data:{"connectedTo":$("#enter-ip").val(),"guest":$("#name-ip").val()},
+                    method:"get",
                     success:function(data){
                         window.location.href="http://"+$("#enter-ip").val()+":17141/multiplayer"
-                        console.log("http://"+data+":17141/multiplayer")
                     }
                 })
             }
+
+            function fallingCoins(){
+                for(let i=0;i<11;i++){
+                    let laneNo = Math.floor(Math.random() * (10)) + 1;
+                    $("#channel-lane-"+laneNo).append($("<div></div>").attr("class","coin").css({"top":-Math.floor(Math.random() * (300))}).fadeIn("fast").animate({"top":"100vh"},2000,"linear",function(){
+                        $(this).remove()
+                    }))
+                }
+                
+            }
+            fallingCoins()
+            setInterval(fallingCoins,1000)
 
 
         </script>

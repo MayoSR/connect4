@@ -18,10 +18,39 @@
 
         
 
-        body,html{
+@media only screen and (max-width: 600px) {
+        td{
+            width:50px !important;
+            height:50px !important;
+            padding:4px !important;
+        }
+
+        .lower-circle{
+            width:41px !important;
+            height:41px !important;
+            top:4px !important;
+            box-shadow: inset 10px 10px 60px -19px rgba(0,0,0,0.4) !important;
+        }
+
+
+        table{
+            box-shadow: none !important;
+        }
+
+        .loader{
+            width:40px !important;
+            height:40px !important;
+        }
+
+        .header h1{
+            font-size:64px !important; 
+        }
+    }
+
+    body,html{
             background:#b3b3b3;
             text-align: center;
-            overflow: hidden;
+
         }
         table{
             border-collapse: collapse;
@@ -82,9 +111,14 @@
             position: absolute;
             height:100%;
             width: 100%;
+            top:0px;
+            left:0px;
+            right:0px;
+            bottom:0px;
             display: flex;
             justify-content: center;
             margin-top:200px;
+            z-index:5;
         }
 
         .header{
@@ -93,6 +127,10 @@
             display: flex;
             justify-content: center;
             width:100%;
+            top:0px;
+            left:0px;
+            bottom:0px;
+            right:0px;
             
         }
 
@@ -118,7 +156,7 @@
 
         #loader-cover{
             background:#0e9aa7;
-            z-index:3;
+            z-index:10;
             flex-direction: column;
         }
 
@@ -127,7 +165,7 @@
             width:80px;
             background:whitesmoke;
             border-radius:50%;
-            margin-right:20px;
+            margin-left:20px;
             box-shadow: inset 10px 10px 60px -19px rgba(0,0,0);
             background:#fe8a71;
         }
@@ -143,8 +181,95 @@
         #winner-banner{
             display: none;
         }
+        
+        #details{
+            width:100%;
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            width:100%;
+            left:0px;
+            right:0px;
+            top:0px;
+            z-index:8;
+            box-shadow: 0px 2px 40px 20px rgba(0,0,0,0.1);
+        }
+
+        #details div{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex:1;
+            background:#d9d9d9;
+            height:70px;
+        }
+
+        #highlight-div input{
+            background:none;
+            box-shadow: none;
+            border:none;
+            border:1px solid rgba(0,0,0,0.3);
+            background:#e6e6e6;
+            padding:10px;
+            border-radius: 10px;
+            background:#0e9aa7;
+            color:white;
+            letter-spacing: 0.1em;
+        }
+
+        #details h1{
+            margin:0px;
+        }
+
+        #player-2{
+            color:#f6cd61;
+        }
+
+        #player-1{
+            color:#fe8a71;
+        }
+
+        .falling-container{
+            position: absolute;
+            top:0px;
+            left:0px;
+            right:0px;
+            bottom:0px;
+            width:100%;
+            height:100%;
+            z-index:3;
+            display: flex;
+            flex-direction: row;
+            overflow-y: hidden;
+        }
+
+        .channel-lanes{
+            flex:0.1;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .coin{
+            width:80px;
+            height:80px;
+            border:1px solid rgba(0,0,0,0.1);
+            border-radius:50%;
+            background:rgba(81,81,81,0.1);
+            display: none;
+            position: absolute;
+            top:0px;
+        }
 
 
+        @keyframes twirlCoin{
+            from{
+                transform: rotateY(0deg);
+            }
+            to{
+                transform: rotateY(360deg);
+            }
+        }
 
     </style>
     <body>
@@ -156,10 +281,68 @@
                 <div id="loader-4" class="loader"></div>
             </div>
         </div>
-        
+        <div class="falling-container">
+            <div class="channel-lanes" id="channel-lane-1">
+                <div class="coin" id="coin-1">
 
-        <div class="header">
-            <h1>Connect Four</h1>
+                </div>
+            </div>
+            <div class="channel-lanes" id="channel-lane-2">
+                <div class="coin" id="coin-2">
+
+                </div>
+            </div>
+            <div class="channel-lanes" id="channel-lane-3">
+                <div class="coin" id="coin-3">
+
+                </div>
+            </div>
+            <div class="channel-lanes" id="channel-lane-4">
+                <div class="coin" id="coin-4">
+
+                </div>
+            </div>
+            <div class="channel-lanes" id="channel-lane-5">
+                <div class="coin" id="coin-5">
+
+                </div>
+            </div>
+            <div class="channel-lanes" id="channel-lane-6">
+                <div class="coin" id="coin-6">
+
+                </div>
+            </div>
+            <div class="channel-lanes" id="channel-lane-7">
+                <div class="coin" id="coin-7">
+
+                </div>
+            </div>
+            <div class="channel-lanes" id="channel-lane-8">
+                <div class="coin" id="coin-8">
+
+                </div>
+            </div>
+            <div class="channel-lanes" id="channel-lane-9">
+                <div class="coin" id="coin-9">
+
+                </div>
+            </div>
+            <div class="channel-lanes" id="channel-lane-10">
+                <div class="coin" id="coin-10">
+
+                </div>
+            </div>
+        </div>
+        <div id="details">
+            <div class="name-holder">
+                <h1 id="player-1"></h1>
+            </div>
+            <div id="highlight-div">
+                <input type="button" onclick="highlightLastMove()" value="Hightlight Last Move">
+            </div>
+            <div class="name-holder">
+                <h1 id="player-2"></h1>
+            </div>
         </div>
         <div id="table-container">
             <table id="main-table">
@@ -182,12 +365,21 @@
                 method:"post",
                 success:function(data){
                     if(data==null){
-                        socket = io.connect("http://localhost",{ port: 17141 });
+                        socket = io.connect("http://localhost:17141");
                     }
                     else{
-                        socket = io.connect("http://"+data,{ port: 17141 });
+                        socket = io.connect("http://"+data+":17141");
                     }
                     resolve("socketset")
+                }
+            })
+
+            $.ajax({
+                url:"http://localhost:17141/getnames",
+                method:"get",
+                success:function(data){
+                    $("#player-1").text(data.split("-")[0])
+                    $("#player-2").text(data.split("-")[1])
                 }
             })
         });
@@ -209,11 +401,11 @@
             row = 0
             data = 0
 
-            /*if (performance.navigation.type == 1) {
+            if (performance.navigation.type == 1) {
                 if(localStorage.getItem("matrix")!=null){
                     loadData()
                 }
-            }*/
+            }
             
             $("#table-container").css({"pointer-events":"none"})
 
@@ -388,9 +580,21 @@
         }
         loaderRipple()
 
-        function highlightMove(){
+        function highlightLastMove(){
             $($("#"+lastmove).find(".circle-div")).effect("highlight",{"color":"purple"},1000)
         }
+
+        function fallingCoins(){
+            for(let i=0;i<11;i++){
+                let laneNo = Math.floor(Math.random() * (10)) + 1;
+                $("#channel-lane-"+laneNo).append($("<div></div>").attr("class","coin").css({"top":-Math.floor(Math.random() * (300))}).fadeIn("fast").animate({"top":"100vh"},2000,"linear",function(){
+                    $(this).remove()
+                }))
+            }
+            
+        }
+        fallingCoins()
+        setInterval(fallingCoins,1000)
 
         </script>
     </body>

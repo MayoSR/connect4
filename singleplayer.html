@@ -16,12 +16,12 @@
     </head>
     <style>
 
-        
+    
 
-body,html{
+    body,html{
             background:#b3b3b3;
             text-align: center;
-            overflow: hidden;
+
         }
         table{
             border-collapse: collapse;
@@ -60,10 +60,13 @@ body,html{
         }
 
         .circle-div{
+            position: absolute;
             border-radius: 50%;
-            height:100%;
-            width:100%;
+            top:12px;
+            border-radius: 50%;
+            height:75px;
             cursor: pointer;
+            width:75px;
             box-shadow: inset 10px 10px 40px -19px rgba(0,0,0);
         }
 
@@ -82,7 +85,12 @@ body,html{
             position: absolute;
             height:100%;
             width: 100%;
+            top:0px;
+            left:0px;
+            right:0px;
+            bottom:0px;
             display: flex;
+            z-index:5;
             justify-content: center;
             margin-top:200px;
         }
@@ -93,6 +101,10 @@ body,html{
             display: flex;
             justify-content: center;
             width:100%;
+            top:0px;
+            left:0px;
+            bottom:0px;
+            right:0px;
             
         }
 
@@ -118,7 +130,7 @@ body,html{
 
         #loader-cover{
             background:#0e9aa7;
-            z-index:3;
+            z-index:20;
             flex-direction: column;
         }
 
@@ -127,7 +139,7 @@ body,html{
             width:80px;
             background:whitesmoke;
             border-radius:50%;
-            margin-right:20px;
+            margin-left:20px;
             box-shadow: inset 10px 10px 60px -19px rgba(0,0,0);
             background:#fe8a71;
         }
@@ -143,29 +155,210 @@ body,html{
         #winner-banner{
             display: none;
         }
+
+        @media only screen and (max-width: 600px) {
+
+            body,html{
+                overflow: hidden;
+                background:#0e9aa7;
+            }
+
+            h1{
+                color:whitesmoke;
+            }
+
+            #table-container{
+                padding:10px;
+            }
+            
+            tr{
+                text-align: center;
+            }
+
+            td{
+                width:45px;
+                height:45px;
+                border:none;
+                background:#0e9aa7;
+                padding-left:8px;
+            }
+
+            .lower-circle{
+                width:38px;
+                height:38px;
+                top:6px;
+                box-shadow: none;
+                background:#e6e6e6;
+            }
+
+            .circle-div{
+                top:6px;
+                width:38px;
+                height:38px;
+                box-shadow: none;
+                background:#e6e6e6;
+            }
+
+
+
+            table{
+                box-shadow: none;
+                width:100%;
+            }
+
+            .loader{
+                width:60px;
+                height:60px;
+                box-shadow: none;
+            }
+
+            .loader:first-of-type{
+                margin-left:0px;
+            }
+
+            .header h1{
+                font-size:64px; 
+            }
+
+            .nav-console{
+                position: absolute;
+                z-index:8;
+            }
+
+            .nav-console input{
+                background:#0a6d76;
+                border:none;
+                color:white;
+                padding:8px;
+                border-radius: 5px;
+            }
+        }
+
+        .falling-container{
+            position: absolute;
+            top:0px;
+            left:0px;
+            right:0px;
+            bottom:0px;
+            width:100%;
+            height:100%;
+            z-index:3;
+            display: flex;
+            flex-direction: row;
+            overflow-y: hidden;
+        }
+
+        .channel-lanes{
+            flex:0.1;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .coin{
+            width:80px;
+            height:80px;
+            border:1px solid rgba(0,0,0,0.1);
+            border-radius:50%;
+            background:rgba(81,81,81,0.1);
+            display: none;
+            position: absolute;
+            top:0px;
+        }
+
+
+        @keyframes twirlCoin{
+            from{
+                transform: rotateY(0deg);
+            }
+            to{
+                transform: rotateY(360deg);
+            }
+        }
+        
         
     </style>
     <body>
 
-        <div class="cover-page" id="loader-cover">
-            <div class="loader-row">
-                <div id="loader-1" class="loader"></div>
-                <div id="loader-2" class="loader"></div>
-                <div id="loader-3" class="loader"></div>
-                <div id="loader-4" class="loader"></div>
+        <div class="container-fluid">
+            <div class="cover-page" id="loader-cover">
+                <div class="loader-row">
+                    <div id="loader-1" class="loader"></div>
+                    <div id="loader-2" class="loader"></div>
+                    <div id="loader-3" class="loader"></div>
+                    <div id="loader-4" class="loader"></div>
+                </div>
+            </div>
+            <div class="falling-container">
+                <div class="channel-lanes" id="channel-lane-1">
+                    <div class="coin" id="coin-1">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-2">
+                    <div class="coin" id="coin-2">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-3">
+                    <div class="coin" id="coin-3">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-4">
+                    <div class="coin" id="coin-4">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-5">
+                    <div class="coin" id="coin-5">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-6">
+                    <div class="coin" id="coin-6">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-7">
+                    <div class="coin" id="coin-7">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-8">
+                    <div class="coin" id="coin-8">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-9">
+                    <div class="coin" id="coin-9">
+
+                    </div>
+                </div>
+                <div class="channel-lanes" id="channel-lane-10">
+                    <div class="coin" id="coin-10">
+
+                    </div>
+                </div>
+            </div>
+            <div class="header">
+                <h1>Connect Four</h1>
+            </div>
+            
+            <div id="table-container">
+                
+                <table id="main-table">
+    
+                </table>
+            </div>
+            <div class="nav-console">
+                <input type="button" onclick="highlightLastMove()" value="Hightlight last move">
             </div>
         </div>
-
-        <div class="header">
-            <h1>Connect Four</h1>
-        </div>
-        <div id="table-container">
-            <table id="main-table">
-
-            </table>
-        </div>
+        
         <script>
 
+        
         matrix = [
             [0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0],
@@ -176,7 +369,12 @@ body,html{
             ]
         turn = 0
         row = 0
+        lastmove = null
         
+        $(document).ready(function(){
+            $(".nav-console").css({"top":$("#table-container").outerWidth()+140})
+        })
+
         for(let i=0;i<6;i++){
             tr = $("<tr></tr>")
             col = 0
@@ -190,20 +388,39 @@ body,html{
                         }
                     }
                     
-                    matrix[i-1][getCol] = turn%2+1
-                    if(turn%2==0){
-                        $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#fe8a71","position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
-                            socket.on('move', function (data) {
-                                socket.emit('mode made', { move: i-1+"-"+getCol });
-                            });
-                            iterateMatrix()
-                        })
+                    try{
+                        matrix[i-1][getCol] = turn%2+1
+                        if(turn%2==0){
+                            lastmove = (i-1)+"-"+getCol
+                            if ($(window).width() < 600) {
+                                    $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#fe8a71","position":"absolute","top":"-600px"}).animate({"top":"6px"},function(){
+                                    iterateMatrix()
+                                })
+                            }
+                            else {
+                                $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#fe8a71","position":"absolute","top":"-600px"}).animate({"top":"12px"},function(){
+                                    iterateMatrix()
+                                })
+                            }
+                            
+                        }
+                        else{
+                            if ($(window).width() < 600) {
+                                    $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#f6cd61","position":"absolute","top":"-600px"}).animate({"top":"6px"},function(){
+                                    iterateMatrix()
+                                })
+                            }
+                            else {
+                                $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#f6cd61","position":"absolute","top":"-600px"}).animate({"top":"12px"},function(){
+                                    iterateMatrix()
+                                })
+                            }
+                        }
                     }
-                    else{
-                        $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#f6cd61","position":"relative","top":"-600px"}).animate({"top":"0px"},function(){
-                            iterateMatrix()
-                        })
+                    catch{
+                        $("body").css({"pointer-events":"auto"})
                     }
+                    
                     
                 }))
                 col++
@@ -227,7 +444,7 @@ body,html{
         }
 
         function endGame(){
-            $("#table-container").animate({"transform":"rotateZ(180deg)"})
+            $("#winner-banner").show()
         }
 
         function checkGameEnd(coords,search){
@@ -279,6 +496,22 @@ body,html{
 
         }
             loaderRipple()
+
+        function highlightLastMove(){
+            $($("#"+lastmove).find(".circle-div")).effect("highlight",{"color":"whitesmoke"},1000)
+        }
+
+        function fallingCoins(){
+            for(let i=0;i<11;i++){
+                let laneNo = Math.floor(Math.random() * (10)) + 1;
+                $("#channel-lane-"+laneNo).append($("<div></div>").attr("class","coin").css({"top":-Math.floor(Math.random() * (300))}).fadeIn("fast").animate({"top":"100vh"},2000,"linear",function(){
+                    $(this).remove()
+                }))
+            }
+            
+        }
+        fallingCoins()
+        setInterval(fallingCoins,1000)
 
         </script>
     </body>
