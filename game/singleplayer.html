@@ -370,64 +370,113 @@
         turn = 0
         row = 0
         lastmove = null
-        
+        if (performance.navigation.type == 1) {
+            if(localStorage.getItem("matrix")!=null){
+                loadData()
+                buildTable()
+                setColor()
+            }
+        }
+        else{
+            buildTable()
+        }
+
         $(document).ready(function(){
             $(".nav-console").css({"top":$("#table-container").outerWidth()+140})
         })
 
-        for(let i=0;i<6;i++){
-            tr = $("<tr></tr>")
-            col = 0
-            for(let i=0;i<7;i++){
-                tr.append($("<td><div class='lower-circle'></div><div class='circle-div'></div></td>").attr("id",row+"-"+col).click(function(){
-                    $("body").css({"pointer-events":"none"})
-                    var getCol = parseInt($(this).attr("id").split("-")[1])
-                    for(var i=0;i<6;i++){    
-                        if(matrix[i][getCol]){
-                            break;
-                        }
+        function setColor(){
+            for(let i=0;i<6;i++){
+                for(let j=0;j<7;j++){
+                    if(matrix[i][j]==1){
+                        $($("#"+(i)+"-"+j).find(".circle-div")).css({"background":"#fe8a71"})
                     }
-                    
-                    try{
-                        matrix[i-1][getCol] = turn%2+1
-                        if(turn%2==0){
-                            lastmove = (i-1)+"-"+getCol
-                            if ($(window).width() < 600) {
-                                    $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#fe8a71","position":"absolute","top":"-600px"}).animate({"top":"6px"},function(){
-                                    iterateMatrix()
-                                })
+                    else if(matrix[i][j]==2){
+                        $($("#"+(i)+"-"+j).find(".circle-div")).css({"background":"#f6cd61"})
+                    }
+                }
+            }
+        }
+
+        function saveData(){
+            localStorage.setItem("matrix", JSON.stringify(matrix));
+            localStorage.setItem("lastmove", lastmove);
+            localStorage.setItem("turn",turn)
+            try{
+                localStorage.setItem("matrixnum", matrixnum);
+                localStorage.setItem("selfcolor", selfcolor);
+                localStorage.setItem("oppcolor", data["color"]);
+            }
+            catch(e){
+                
+            }
+            
+        }
+
+        function loadData(){
+            matrix = JSON.parse(localStorage.getItem("matrix"));
+            selfcolor = localStorage.getItem("selfcolor")
+            matrixnum = localStorage.getItem("matrixnum")
+            oppcolor = localStorage.getItem("oppcolor")
+            lastmove = localStorage.getItem("lastmove")
+            turn = localStorage.getItem("turn",turn)
+        }
+
+        function resetLocalStorage(){
+            localStorage.removeItem("matrix");
+            localStorage.removeItem("selfcolor");
+            localStorage.removeItem("matrixnum");
+            localStorage.removeItem("oppcolor");
+            localStorage.removeItem("lastmove")
+            localStorage.removeItem("turn")
+        }
+
+        function buildTable(){
+            for(let i=0;i<6;i++){
+                tr = $("<tr></tr>")
+                col = 0
+                for(let i=0;i<7;i++){
+                    tr.append($("<td><div class='lower-circle'></div><div class='circle-div'></div></td>").attr("id",row+"-"+col).click(function(){
+                        $("body").css({"pointer-events":"none"})
+                        var getCol = parseInt($(this).attr("id").split("-")[1])
+                        for(var i=0;i<6;i++){    
+                            if(matrix[i][getCol]){
+                                break;
                             }
-                            else {
+                        }
+                        lastmove = (i-1)+"-"+getCol
+                        try{
+                            matrix[i-1][getCol] = turn%2+1
+                            
+                            if(turn%2==0){
+                                
+
                                 $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#fe8a71","position":"absolute","top":"-600px"}).animate({"top":"12px"},function(){
                                     iterateMatrix()
+                                    saveData()
                                 })
                             }
+                            else{
                             
-                        }
-                        else{
-                            if ($(window).width() < 600) {
-                                    $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#f6cd61","position":"absolute","top":"-600px"}).animate({"top":"6px"},function(){
-                                    iterateMatrix()
-                                })
-                            }
-                            else {
                                 $($("#"+(i-1)+"-"+getCol).find(".circle-div")).css({"background":"#f6cd61","position":"absolute","top":"-600px"}).animate({"top":"12px"},function(){
                                     iterateMatrix()
+                                    saveData()
                                 })
                             }
                         }
-                    }
-                    catch{
-                        $("body").css({"pointer-events":"auto"})
-                    }
-                    
-                    
-                }))
-                col++
+                        catch{
+                            $("body").css({"pointer-events":"auto"})
+                        }
+                        
+                        
+                    }))
+                    col++
+                }
+                row++
+                $("#main-table").append(tr)
             }
-            row++
-            $("#main-table").append(tr)
         }
+        
 
         
         function iterateMatrix(search){
@@ -443,8 +492,8 @@
             $("body").css({"pointer-events":"auto"})
         }
 
-        function endGame(){
-            $("#winner-banner").show()
+        function endGame(winner){
+            resetLocalStorage()
         }
 
         function checkGameEnd(coords,search){

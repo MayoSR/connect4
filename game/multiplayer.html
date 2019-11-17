@@ -404,7 +404,12 @@
             if (performance.navigation.type == 1) {
                 if(localStorage.getItem("matrix")!=null){
                     loadData()
+                    buildTable()
+                    setColor()
                 }
+            }
+            else{
+                buildTable()
             }
             
             $("#table-container").css({"pointer-events":"none"})
@@ -433,8 +438,6 @@
                 }
 
             })
-
-            
             
             for(let i=0;i<6;i++){
                 tr = $("<tr></tr>")
@@ -466,10 +469,17 @@
 
         function saveData(){
             localStorage.setItem("matrix", JSON.stringify(matrix));
-            localStorage.setItem("selfcolor", selfcolor);
-            localStorage.setItem("matrixnum", matrixnum);
-            localStorage.setItem("oppcolor", data["color"]);
-            localStorage.setItem("lastmove", data["data"]);
+            localStorage.setItem("lastmove", lastmove);
+            localStorage.setItem("turn",turn)
+            try{
+                localStorage.setItem("matrixnum", matrixnum);
+                localStorage.setItem("selfcolor", selfcolor);
+                localStorage.setItem("oppcolor", data["color"]);
+            }
+            catch(e){
+                
+            }
+            
         }
 
         function loadData(){
@@ -477,7 +487,17 @@
             selfcolor = localStorage.getItem("selfcolor")
             matrixnum = localStorage.getItem("matrixnum")
             oppcolor = localStorage.getItem("oppcolor")
-            oppcolor = localStorage.getItem("lastmove")
+            lastmove = localStorage.getItem("lastmove")
+            turn = localStorage.getItem("turn",turn)
+        }
+
+        function resetLocalStorage(){
+            localStorage.removeItem("matrix");
+            localStorage.removeItem("selfcolor");
+            localStorage.removeItem("matrixnum");
+            localStorage.removeItem("oppcolor");
+            localStorage.removeItem("lastmove")
+            localStorage.removeItem("turn")
         }
 
         function setMatrix(matrix,selfcolor,matrixnum,oppcolor){
@@ -494,14 +514,6 @@
                     }
                 }
             }
-        }
-
-        function resetLocalStorage(){
-            localStorage.removeItem("matrix");
-            localStorage.removeItem("selfcolor");
-            localStorage.removeItem("matrixnum");
-            localStorage.removeItem("oppcolor");
-            localStorage.removeItem("lastmove")
         }
         
         function iterateMatrix(){
