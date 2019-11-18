@@ -73,18 +73,30 @@ app.post('/getip', function (req, res) {
 
 turn = 0
 colors = ["#fe8a71","#f6cd61"]
-
+socket1 = null
+socket2 = null
 io.on('connection', function (socket) {
-  connections.push(socket)
-  if(connections.length==2){
-    connections[1].emit('send move',{"move":"begin","selfcolor":colors[0],"matrixnum":1}) 
-    connections[0].emit('send move',{"move":"set","selfcolor":colors[1],"matrixnum":2}) 
-  }
-  console.log("Connected : %s sockets connected",connections.length)
-
+    if(socket1==null){
+      socket1 = socket
+      console.log("here1")
+    }
+    else if(socket2==null){
+      socket2 = socket
+      console.log("here2")
+    }
+    if(socket1!=null && socket2!=null){
+      socket1.emit('send move',{"move":"begin","selfcolor":colors[0],"matrixnum":1}) 
+      socket2.emit('send move',{"move":"set","selfcolor":colors[1],"matrixnum":2})
+    }
+    
   socket.on("disconnect",(data)=>{
-    connections.splice(connections.indexOf(socket),1)
-    console.log("Disconnected : %s sockets connected",connections.length)
+    if(socket1==socket){
+      socket1=null
+    }
+    else if(socket2==socket){
+      socket2=null
+    }
+    console.log("connected : sockets connected")
   })
   
   socket.on("get moves",(data)=>{
