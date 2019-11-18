@@ -179,6 +179,17 @@
         }
 
         #winner-banner{
+            position: absolute;
+            top:0px;
+            left:0px;
+            right:0px;
+            bottom:0px;
+            width:100%;
+            height:100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index:1000;
             display: none;
         }
         
@@ -539,6 +550,7 @@
         function endGame(winner){
             socket.emit("complete game",winner)
             socket.on("game over message",(data)=>{
+                $("#winner-banner").css({"display":"flex"}).hide().fadeIn()
                 $("#winner-text").text(data)
                 console.log("here")
             })

@@ -105,10 +105,10 @@ io.on('connection', function (socket) {
   
   socket.on("complete game",(data)=>{
     if(data==1){
-      io.emit("game over message","Player 1 has won")
+      io.emit("game over message", ownerName+" has won")
     }
     else{
-      io.emit("game over message","Player 2 has won")
+      io.emit("game over message",guestName+" has won")
     }
     
   })
